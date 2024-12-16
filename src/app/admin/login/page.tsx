@@ -8,7 +8,6 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLoginSuccess = () => {
-    alert("You are logged in!");
     router.push('/admin/dashboard');
   };
 

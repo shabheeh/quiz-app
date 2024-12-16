@@ -3,13 +3,13 @@
 import axios from "axios";
 import { useRef, useState } from "react";
 import { validateEmail } from "../_lib/auth";
+import { toast } from "react-toastify";
 
 export default function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => void }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailLabel, setEmailLabel] = useState('Email')
   const [passwordLabel, setPasswordLabel] = useState('Password')
-  const [error, setError] = useState('');
 
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
@@ -17,10 +17,9 @@ export default function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => vo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); 
 
     if (!email && !password) {
-    //   setError("Please fill in both fields.");
+
       setEmailLabel('Please enter email')
       setPasswordLabel('Please enter password')
       emailRef.current?.focus()
@@ -50,7 +49,7 @@ export default function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => vo
     }
 
     try {
-        const res = await axios.post("/api/login", {
+        const res = await axios.post("/api/admin/login", {
             email,
             password,
           });
@@ -59,19 +58,18 @@ export default function LoginForm({ onLoginSuccess }: { onLoginSuccess: () => vo
             throw new Error("Invalid credentials");
           }
 
-      onLoginSuccess(); // Pass login success to the parent component
+      onLoginSuccess(); 
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || "Something went wrong");
+        toast.error(err.message || "Something went wrong");
       } else {
-        setError("Something went wrong");
+        toast.error("Something went wrong");
       }
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
       <div>
         <label htmlFor="email" 
         className={`block mb-1 ${emailLabel !== 'Email' ? 'text-red-500' : 'text-gray-700'}`}
